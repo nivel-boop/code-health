@@ -22,6 +22,104 @@ Helps project managers and tech leads:
 - 🚨 Early detection of technical risks
 - 💡 Data-driven improvement decisions
 
+## Features Preview
+
+### 📱 DingTalk Daily Report
+
+The system automatically pushes daily health monitoring reports to DingTalk group chat in the following format:
+
+```
+📊 Code Management - Daily Health Monitor
+
+Date: 2026-01-04
+System: Code Health Monitor
+
+━━━━━━━━━━━━━━━━━━━
+
+📈 Core Metrics
+• Commits: 23
+• Active Developers: 5
+• Net Code Change: +1,245 lines
+• Health Score: 85.5 🟢 Excellent
+
+━━━━━━━━━━━━━━━━━━━
+
+🚨 Risk Indicators
+• Churn Rate: 12.3%
+• Rework Rate: 8.7%
+• Overtime Commits: 3
+
+━━━━━━━━━━━━━━━━━━━
+
+🔗 Quick Links
+📄 View Full Report
+📊 View Dashboard
+```
+
+### 📊 Visualization Dashboard
+
+Access via web interface to view:
+- **Health Score Trends**: Score changes across multiple time ranges (7/14/30/60/90 days)
+- **Code Change Heatmap**: Visual representation of code activity distribution
+- **Risk Indicator Statistics**: Charts displaying key metrics like churn rate and rework rate
+
+### 📄 Markdown Report Example
+
+<details>
+<summary><b>Click to view full report example</b></summary>
+
+```markdown
+# Code Health Daily Report
+
+**Date**: 2026-01-04
+**Reporting Period**: 2026-01-04 00:00:00 to 2026-01-04 23:59:59
+
+---
+
+## 📊 Overview
+
+| Metric | Value |
+|--------|-------|
+| Total Commits | **23** |
+| Active Developers | **5** |
+| Active Repositories | **3** |
+| **Lines Added** | **2,134** |
+| **Lines Deleted** | **889** |
+| **Net Change** | **+1,245** |
+| Files Changed | **87** |
+
+---
+
+## 🚨 Risk Alerts
+
+### Code Churn Detection
+- **Churn Rate**: 12.3%
+- **Churning Files**: 8
+
+**Churning Files List**:
+1. `backend/service/UserService.java` - 7 modifications
+2. `frontend/components/Header.vue` - 6 modifications
+...
+
+### Rework Rate Analysis
+- **Rework Rate**: 8.7%
+- **Rework Code**: 186 lines
+
+---
+
+## 📈 Health Score
+
+**Overall Score**: 85.5 🟢 **Excellent**
+
+Score Breakdown:
+- Good commit quality
+- Churn rate within normal range
+- Low rework rate
+- Reasonable working hours distribution
+```
+
+</details>
+
 ## Core Features
 
 ### 1. Automated Reporting
@@ -166,7 +264,7 @@ code-health/
 
 - [METRICS.md](METRICS.md) - Detailed metrics documentation
 - [SECURITY.md](SECURITY.md) - Security best practices
-- [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md) - Security checklist
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guide
 - [config.example.yaml](config.example.yaml) - Configuration template
 
 ## Contributing

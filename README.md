@@ -523,11 +523,6 @@ python3 weekly-report.py
 │   ├── index-30d.html           # 30天仪表盘
 │   ├── index-60d.html           # 60天仪表盘
 │   └── index-90d.html           # 90天仪表盘
-│
-└── docs/                        # 文档目录
-    ├── ECS_COMPLETE_GUIDE.md    # ECS 部署完整指南
-    ├── USER_GUIDE.md            # 用户使用指南
-    └── AUTOMATION_STATUS.md     # 自动化状态说明
 ```
 
 ## 配置说明
@@ -659,10 +654,9 @@ python3 dashboard-generator-range.py 30
 ## 文档索引
 
 - [METRICS.md](METRICS.md) - 详细指标体系说明
-- [ECS_COMPLETE_GUIDE.md](ECS_COMPLETE_GUIDE.md) - ECS 部署完整指南
-- [USER_GUIDE.md](USER_GUIDE.md) - 用户使用指南
-- [AUTOMATION_STATUS.md](AUTOMATION_STATUS.md) - 自动化配置状态
-- [config.yaml](config.yaml) - 配置文件模板
+- [SECURITY.md](SECURITY.md) - 安全配置指南
+- [CONTRIBUTING.md](CONTRIBUTING.md) - 贡献指南
+- [config.example.yaml](config.example.yaml) - 配置文件模板
 
 ## 常见问题
 
