@@ -29,11 +29,15 @@ config-ecs.yaml
 # Repository list (contains private repo URLs)
 repos-list.txt
 
-# Reports (generated files)
+# Reports (generated files, keep examples)
 reports/daily/*.md
 reports/daily/*.html
+!reports/daily/example-*.md
 reports/weekly/*.md
 reports/weekly/*.html
+!reports/weekly/example-*.md
+reports/monthly/*.md
+!reports/monthly/example-*.md
 reports/index.html
 reports/*.log
 

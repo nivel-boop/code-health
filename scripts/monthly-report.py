@@ -634,7 +634,7 @@ class MonthlyReportGenerator:
         lines = [
             "---",
             "",
-            "*本报告由 EcoMind 代码健康监控系统自动生成*",
+            "*本报告由 Code Health Monitor 自动生成*",
             "",
             f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         ]
