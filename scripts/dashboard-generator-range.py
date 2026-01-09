@@ -126,20 +126,11 @@ def generate_dashboard_html(data, start_date, end_date, days_count, project_star
             continue
 
         is_current = (days_count == days)
-        url = 'index.html' if days == 30 else f'index-{days}d.html'
+        url = 'index.html' if days == 7 else f'index-{days}d.html'
         range_options.append({
             'value': url,
             'label': f'最近{days}天',
             'selected': is_current
-        })
-
-    # 添加项目全周期选项
-    if project_days and project_start_date:
-        is_all = (days_count == project_days)
-        range_options.append({
-            'value': 'index-all.html',
-            'label': f'📅 项目全周期 ({project_days}天)',
-            'selected': is_all
         })
 
     # 生成下拉菜单选项HTML
@@ -772,10 +763,10 @@ def main():
         # 最近N天模式
         days = int(sys.argv[1])
         start_date, end_date, days_count = get_date_range(days=days)
-        output_filename = f"index.html" if days == 30 else f"index-{days}d.html"
+        output_filename = f"index.html" if days == 7 else f"index-{days}d.html"
     else:
-        # 默认最近30天
-        start_date, end_date, days_count = get_date_range(days=30)
+        # 默认最近7天
+        start_date, end_date, days_count = get_date_range(days=7)
         output_filename = "index.html"
 
     print(f"📊 正在生成仪表盘...")
@@ -803,7 +794,28 @@ def main():
         data['dates'].append(current_date.strftime('%Y-%m-%d'))
         current_date += timedelta(days=1)
 
-    # 收集所有仓库的提交
+    # 计算项目最早日期和运行天数（基于所有历史提交）
+    project_start_date = None
+    project_days = None
+    print(f"📅 正在计算项目运行天数...")
+    for repo in config['repositories']:
+        if not os.path.exists(repo['path']):
+            continue
+        git_analyzer = GitAnalyzer(repo['path'])
+        # 获取所有历史提交（不限时间范围）
+        all_history_commits = git_analyzer.get_commits("2000-01-01 00:00:00", "2030-01-01 00:00:00", branch="all")
+        if all_history_commits:
+            earliest_commit = min(all_history_commits, key=lambda c: c['date'])
+            commit_date = parse_iso_datetime(earliest_commit['date']).date()
+            if project_start_date is None or commit_date < project_start_date:
+                project_start_date = commit_date
+
+    if project_start_date:
+        project_days = (datetime.now().date() - project_start_date).days + 1
+        print(f"   项目最早提交: {project_start_date}")
+        print(f"   项目运行天数: {project_days}天")
+
+    # 收集所有仓库的提交（当前时间范围）
     since_time = start_date.strftime('%Y-%m-%d 00:00:00')
     until_time = (end_date + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
 
@@ -848,15 +860,6 @@ def main():
                 })
             except Exception as e:
                 print(f"Error processing commit: {e}")
-
-    # 计算项目最早日期和运行天数
-    project_start_date = None
-    project_days = None
-    if data['all_commits']:
-        # 找到所有提交中最早的日期
-        earliest_commit = min(data['all_commits'], key=lambda c: c['date'])
-        project_start_date = parse_iso_datetime(earliest_commit['date']).date()
-        project_days = (datetime.now().date() - project_start_date).days + 1
 
     # 生成HTML
     html = generate_dashboard_html(data, start_date, end_date, days_count, project_start_date, project_days)

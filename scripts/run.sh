@@ -53,7 +53,7 @@ case $COMMAND in
     dashboard)
         DAYS=${2:-7}
         echo -e "${GREEN}📊 生成可视化仪表盘 (最近 ${DAYS} 天)...${NC}"
-        python3 dashboard-generator.py "$DAYS"
+        python3 dashboard-generator-range.py "$DAYS"
         DASHBOARD_PATH="../dashboard/index.html"
         if [ -f "$DASHBOARD_PATH" ]; then
             echo -e "${GREEN}✅ 仪表盘已生成${NC}"
