@@ -166,6 +166,104 @@ repositories:
 REPOSITORIES=backend|https://github.com/org/backend.git|java|main,frontend|https://github.com/org/frontend.git|vue|main
 ```
 
+## China Deployment (Alibaba Cloud ECS / Podman)
+
+Due to Docker Hub access restrictions in China, we recommend using Podman with domestic mirror sources.
+
+### 1. Install Podman and podman-compose
+
+```bash
+# CentOS/Alinux
+dnf install -y podman podman-compose
+
+# Or Ubuntu
+apt install -y podman podman-compose
+```
+
+### 2. Configure Environment Variables
+
+```bash
+cp .env.example .env
+vi .env
+```
+
+Alibaba Cloud Codeup configuration example:
+
+```bash
+# Git Platform
+GIT_PLATFORM=codeup
+GIT_TOKEN=your_codeup_token
+
+# Codeup Configuration
+CODEUP_TOKEN=your_codeup_token
+CODEUP_ORG_ID=your_org_id
+CODEUP_PROJECT=your_project
+
+# Project Name
+PROJECT_NAME=Code Health Monitor
+
+# DingTalk Notification
+DINGTALK_ENABLED=true
+DINGTALK_WEBHOOK=https://oapi.dingtalk.com/robot/send?access_token=xxx
+DINGTALK_SECRET=SECxxx
+
+# Web Access
+WEB_BASE_URL=http://your-server:8080
+```
+
+### 3. Build and Deploy with China Configuration
+
+```bash
+# Build image (using domestic mirrors)
+podman-compose -f docker-compose.china.yml build
+
+# Start services
+podman-compose -f docker-compose.china.yml up -d
+
+# Test daily report generation
+podman run --rm --env-file .env -v ./reports:/app/reports code-health:latest daily
+```
+
+### 4. Local Python Execution (Alternative)
+
+If container deployment still has issues, run directly with Python:
+
+```bash
+# Install Python 3.11
+dnf install -y python3.11 python3.11-pip
+
+# Install dependencies
+python3.11 -m pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+
+# Run (source .env first)
+cd /opt/code-health
+set -a && source .env && set +a
+python3.11 -m src.main daily
+python3.11 -m src.main notify daily
+```
+
+### 5. Configure Crontab (Local Execution)
+
+```bash
+crontab -e
+```
+
+Add the following:
+
+```cron
+# Daily report - Generate at 7:45, Send at 8:00
+45 7 * * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main daily >> logs/daily.log 2>&1
+0 8 * * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify daily >> logs/daily-notify.log 2>&1
+
+# Weekly report - Generate Monday 7:30, Send at 8:00
+30 7 * * 1 cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main weekly >> logs/weekly.log 2>&1
+0 8 * * 1 cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify weekly >> logs/weekly-notify.log 2>&1
+
+# Monthly report - Generate 1st at 9:00, Send at 9:30
+0 9 1 * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main monthly >> logs/monthly.log 2>&1
+30 9 1 * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify monthly >> logs/monthly-notify.log 2>&1
+```
+
 ## FAQ
 
 ### Q: Clone repository failed?

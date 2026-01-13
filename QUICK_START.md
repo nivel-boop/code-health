@@ -166,6 +166,104 @@ repositories:
 REPOSITORIES=backend|https://github.com/org/backend.git|java|main,frontend|https://github.com/org/frontend.git|vue|main
 ```
 
+## 国内部署 (阿里云 ECS / Podman)
+
+由于 Docker Hub 在国内访问受限，推荐使用 Podman + 国内镜像源部署。
+
+### 1. 安装 Podman 和 podman-compose
+
+```bash
+# CentOS/Alinux
+dnf install -y podman podman-compose
+
+# 或 Ubuntu
+apt install -y podman podman-compose
+```
+
+### 2. 配置环境变量
+
+```bash
+cp .env.example .env
+vi .env
+```
+
+云效 Codeup 配置示例：
+
+```bash
+# Git 平台
+GIT_PLATFORM=codeup
+GIT_TOKEN=your_codeup_token
+
+# 云效配置
+CODEUP_TOKEN=your_codeup_token
+CODEUP_ORG_ID=your_org_id
+CODEUP_PROJECT=your_project
+
+# 项目名称
+PROJECT_NAME=代码健康监控
+
+# 钉钉通知
+DINGTALK_ENABLED=true
+DINGTALK_WEBHOOK=https://oapi.dingtalk.com/robot/send?access_token=xxx
+DINGTALK_SECRET=SECxxx
+
+# Web 访问
+WEB_BASE_URL=http://your-server:8080
+```
+
+### 3. 使用国内版配置构建和部署
+
+```bash
+# 构建镜像 (使用国内镜像源)
+podman-compose -f docker-compose.china.yml build
+
+# 启动服务
+podman-compose -f docker-compose.china.yml up -d
+
+# 测试生成日报
+podman run --rm --env-file .env -v ./reports:/app/reports code-health:latest daily
+```
+
+### 4. 不使用容器的本地运行方式
+
+如果容器部署仍有问题，可直接使用 Python 运行：
+
+```bash
+# 安装 Python 3.11
+dnf install -y python3.11 python3.11-pip
+
+# 安装依赖
+python3.11 -m pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+
+# 运行（需要先 source .env）
+cd /opt/code-health
+set -a && source .env && set +a
+python3.11 -m src.main daily
+python3.11 -m src.main notify daily
+```
+
+### 5. 配置 Crontab (本地运行方式)
+
+```bash
+crontab -e
+```
+
+添加以下内容：
+
+```cron
+# 日报 - 每天 7:45 生成, 8:00 发送
+45 7 * * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main daily >> logs/daily.log 2>&1
+0 8 * * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify daily >> logs/daily-notify.log 2>&1
+
+# 周报 - 每周一 7:30 生成, 8:00 发送
+30 7 * * 1 cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main weekly >> logs/weekly.log 2>&1
+0 8 * * 1 cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify weekly >> logs/weekly-notify.log 2>&1
+
+# 月报 - 每月1日 9:00 生成, 9:30 发送
+0 9 1 * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main monthly >> logs/monthly.log 2>&1
+30 9 1 * * cd /opt/code-health && set -a && source .env && set +a && python3.11 -m src.main notify monthly >> logs/monthly-notify.log 2>&1
+```
+
 ## 常见问题
 
 ### Q: 克隆仓库失败？

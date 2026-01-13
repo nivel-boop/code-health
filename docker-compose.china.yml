@@ -1,20 +1,35 @@
+# Code Health Monitor - Docker Compose (国内版)
+# 适用于: 阿里云 ECS / 国内服务器 / Podman
+#
+# 使用方法:
+#   podman-compose -f docker-compose.china.yml build
+#   podman-compose -f docker-compose.china.yml up -d
+#
+# 或使用 docker-compose (如果可用):
+#   docker-compose -f docker-compose.china.yml build
+#   docker-compose -f docker-compose.china.yml up -d
+
 version: '3.8'
 
 services:
   # 主服务 - 按需执行报告生成
   code-health:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.china
     image: code-health:latest
     container_name: code-health
     environment:
       # Git平台配置 (必需)
       - GIT_TOKEN=${GIT_TOKEN}
-      - GIT_PLATFORM=${GIT_PLATFORM:-git}
+      - GIT_PLATFORM=${GIT_PLATFORM:-codeup}
       - GIT_ORG=${GIT_ORG:-}
       - GIT_BASE_URL=${GIT_BASE_URL:-}
 
       # 云效配置 (codeup平台)
+      - CODEUP_TOKEN=${CODEUP_TOKEN:-}
       - CODEUP_ORG_ID=${CODEUP_ORG_ID:-}
+      - CODEUP_PROJECT=${CODEUP_PROJECT:-}
 
       # 项目名称
       - PROJECT_NAME=${PROJECT_NAME:-代码健康监控}
@@ -41,13 +56,19 @@ services:
 
   # 定时任务服务
   scheduler:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.china
     image: code-health:latest
     container_name: code-health-scheduler
     environment:
       - GIT_TOKEN=${GIT_TOKEN}
-      - GIT_PLATFORM=${GIT_PLATFORM:-git}
+      - GIT_PLATFORM=${GIT_PLATFORM:-codeup}
       - GIT_ORG=${GIT_ORG:-}
+      - CODEUP_TOKEN=${CODEUP_TOKEN:-}
+      - CODEUP_ORG_ID=${CODEUP_ORG_ID:-}
+      - CODEUP_PROJECT=${CODEUP_PROJECT:-}
+      - PROJECT_NAME=${PROJECT_NAME:-代码健康监控}
       - DINGTALK_ENABLED=${DINGTALK_ENABLED:-false}
       - DINGTALK_WEBHOOK=${DINGTALK_WEBHOOK:-}
       - DINGTALK_SECRET=${DINGTALK_SECRET:-}
@@ -62,24 +83,30 @@ services:
       - |
         echo "=== Code Health Scheduler ==="
         echo "定时任务配置:"
-        echo "  - 每天 18:00: 生成日报"
-        echo "  - 每周五 17:00: 生成周报"
+        echo "  - 每天 07:45: 生成日报"
+        echo "  - 每天 08:00: 发送日报通知"
+        echo "  - 每周一 07:30: 生成周报"
+        echo "  - 每周一 08:00: 发送周报通知"
+        echo "  - 每月1日 09:00: 生成月报"
         echo ""
 
         # 安装 cron
         apt-get update && apt-get install -y cron
 
         # 创建定时任务
-        cat > /etc/cron.d/code-health << 'EOF'
-        # 每天 18:00 生成日报
-        0 18 * * * root cd /app && python -m src.main daily >> /app/logs/cron.log 2>&1
+        cat > /etc/cron.d/code-health << 'CRONTAB'
+        # 日报 - 每天 07:45 生成, 08:00 发送
+        45 7 * * * root cd /app && python -m src.main daily >> /app/logs/daily.log 2>&1
+        0 8 * * * root cd /app && python -m src.main notify daily >> /app/logs/daily-notify.log 2>&1
 
-        # 每周五 17:00 生成周报
-        0 17 * * 5 root cd /app && python -m src.main weekly >> /app/logs/cron.log 2>&1
+        # 周报 - 每周一 07:30 生成, 08:00 发送
+        30 7 * * 1 root cd /app && python -m src.main weekly >> /app/logs/weekly.log 2>&1
+        0 8 * * 1 root cd /app && python -m src.main notify weekly >> /app/logs/weekly-notify.log 2>&1
 
-        # 每月1日 10:00 生成月报
-        0 10 1 * * root cd /app && python -m src.main monthly >> /app/logs/cron.log 2>&1
-        EOF
+        # 月报 - 每月1日 09:00 生成, 09:30 发送
+        0 9 1 * * root cd /app && python -m src.main monthly >> /app/logs/monthly.log 2>&1
+        30 9 1 * * root cd /app && python -m src.main notify monthly >> /app/logs/monthly-notify.log 2>&1
+        CRONTAB
 
         chmod 0644 /etc/cron.d/code-health
         crontab /etc/cron.d/code-health
@@ -90,9 +117,9 @@ services:
     networks:
       - code-health-net
 
-  # Nginx静态服务 - 提供报告查看
+  # Nginx静态服务 - 提供报告查看 (使用 DaoCloud 镜像)
   nginx:
-    image: nginx:alpine
+    image: m.daocloud.io/docker.io/library/nginx:alpine
     container_name: code-health-web
     ports:
       - "8080:80"
